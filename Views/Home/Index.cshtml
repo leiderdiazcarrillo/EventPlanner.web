@@ -1,0 +1,508 @@
+@{
+    Layout = null;
+    ViewBag.Title = "EventPlanner - SENA";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EventPlanner - SENA Cartagena</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@700;800&display=swap" rel="stylesheet" />
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --verde: #39A900;
+            --verde-oscuro: #2a7a00;
+            --verde-suave: #e8f5e0;
+            --negro: #0f1a0a;
+            --gris: #4a5568;
+            --gris-claro: #f7f9f5;
+            --blanco: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gris-claro);
+            color: var(--negro);
+            min-height: 100vh;
+        }
+
+        nav {
+            background: var(--blanco);
+            border-bottom: 2px solid var(--verde-suave);
+            padding: 0 2rem;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Sora', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--verde-oscuro);
+        }
+
+            .nav-logo span {
+                background: var(--verde);
+                color: white;
+                width: 36px;
+                height: 36px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1rem;
+            }
+
+        .nav-btns {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 9px 22px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--verde);
+            color: var(--verde);
+        }
+
+            .btn-outline:hover {
+                background: var(--verde-suave);
+            }
+
+        .btn-solid {
+            background: var(--verde);
+            color: white;
+        }
+
+            .btn-solid:hover {
+                background: var(--verde-oscuro);
+            }
+
+        .hero {
+            background: linear-gradient(135deg, #0f1a0a 0%, #1a3a0a 60%, #2a5a10 100%);
+            color: white;
+            padding: 80px 2rem 90px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .hero::before {
+                content: '';
+                position: absolute;
+                top: -80px;
+                right: -80px;
+                width: 350px;
+                height: 350px;
+                background: radial-gradient(circle, rgba(57,169,0,0.25) 0%, transparent 70%);
+                border-radius: 50%;
+            }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(57,169,0,0.2);
+            border: 1px solid rgba(57,169,0,0.5);
+            color: #7dd45a;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-family: 'Sora', sans-serif;
+            font-size: clamp(2.2rem, 5vw, 3.8rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+            .hero h1 em {
+                font-style: normal;
+                color: #7dd45a;
+            }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.75);
+            max-width: 560px;
+            margin: 0 auto 36px;
+            line-height: 1.7;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-hero-solid {
+            background: var(--verde);
+            color: white;
+            padding: 13px 32px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+        }
+
+            .btn-hero-solid:hover {
+                background: #4dc900;
+                transform: translateY(-2px);
+            }
+
+        .btn-hero-outline {
+            background: transparent;
+            border: 2px solid rgba(255,255,255,0.35);
+            color: white;
+            padding: 13px 32px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+            .btn-hero-outline:hover {
+                border-color: white;
+                background: rgba(255,255,255,0.08);
+            }
+
+        .section {
+            padding: 70px 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--verde);
+            margin-bottom: 10px;
+        }
+
+        .section-title {
+            font-family: 'Sora', sans-serif;
+            font-size: clamp(1.6rem, 3vw, 2.2rem);
+            font-weight: 800;
+            color: var(--negro);
+            margin-bottom: 48px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: white;
+            border: 1.5px solid #e2ead8;
+            border-radius: 14px;
+            padding: 28px;
+            transition: all 0.2s;
+        }
+
+            .feature-card:hover {
+                border-color: var(--verde);
+                transform: translateY(-3px);
+                box-shadow: 0 8px 24px rgba(57,169,0,0.12);
+            }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--verde-suave);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin-bottom: 16px;
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--negro);
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            font-size: 0.88rem;
+            color: var(--gris);
+            line-height: 1.6;
+        }
+
+        .instrucciones-bg {
+            background: white;
+            border-top: 2px solid var(--verde-suave);
+            border-bottom: 2px solid var(--verde-suave);
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 32px;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .step-num {
+            width: 40px;
+            height: 40px;
+            background: var(--verde);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Sora', sans-serif;
+            font-weight: 800;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .step h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--negro);
+        }
+
+        .step p {
+            font-size: 0.85rem;
+            color: var(--gris);
+            line-height: 1.6;
+        }
+
+        .requisito-box {
+            background: var(--verde-suave);
+            border: 1.5px solid #c5e0b0;
+            border-radius: 12px;
+            padding: 18px 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-top: 32px;
+        }
+
+            .requisito-box .icon {
+                font-size: 1.4rem;
+                flex-shrink: 0;
+            }
+
+            .requisito-box p {
+                font-size: 0.9rem;
+                color: var(--verde-oscuro);
+                line-height: 1.6;
+            }
+
+            .requisito-box strong {
+                font-weight: 700;
+            }
+
+        .cta-section {
+            background: linear-gradient(135deg, #0f1a0a, #1f4010);
+            color: white;
+            text-align: center;
+            padding: 70px 2rem;
+        }
+
+            .cta-section h2 {
+                font-family: 'Sora', sans-serif;
+                font-size: clamp(1.6rem, 3vw, 2.4rem);
+                font-weight: 800;
+                margin-bottom: 14px;
+            }
+
+            .cta-section p {
+                color: rgba(255,255,255,0.7);
+                margin-bottom: 32px;
+                font-size: 1rem;
+            }
+
+        .cta-btns {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        footer {
+            background: var(--negro);
+            color: rgba(255,255,255,0.45);
+            text-align: center;
+            padding: 24px;
+            font-size: 0.82rem;
+        }
+
+            footer strong {
+                color: rgba(255,255,255,0.7);
+            }
+
+        @@media (max-width: 480px) {
+            nav { padding: 0 1rem; flex-wrap: wrap; height: auto; min-height: 64px; gap: 8px; padding-top: 8px; padding-bottom: 8px; }
+            .nav-btns { gap: 8px; }
+            .nav-btns .btn { padding: 7px 14px; font-size: 0.82rem; }
+            .hero { padding: 50px 1rem 60px; }
+            .section { padding: 40px 1rem; }
+            .cta-section { padding: 40px 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-logo">
+            <span>EP</span>
+            EventPlanner
+        </div>
+        <div class="nav-btns">
+            @Html.ActionLink("Iniciar sesion", "Login", "Usuario", null, new { @class = "btn btn-outline" })
+            @Html.ActionLink("Registrarse", "Registro", "Usuario", null, new { @class = "btn btn-solid" })
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-badge">SENA &middot; Centro para la Industria Petroquimica &middot; Cartagena</div>
+        <h1>Gestiona eventos del<br /><em>SENA con facilidad</em></h1>
+        <p>EventPlanner es el sistema oficial para inscribirse, organizar y hacer seguimiento a eventos academicos, deportivos y culturales de tu centro.</p>
+        <div class="hero-btns">
+            @Html.ActionLink("Iniciar sesion", "Login", "Usuario", null, new { @class = "btn-hero-solid" })
+            @Html.ActionLink("Registrarse ahora", "Registro", "Usuario", null, new { @class = "btn-hero-outline" })
+        </div>
+    </section>
+
+    <div style="background: var(--gris-claro);">
+        <div class="section">
+            <div class="section-label">Que puedes hacer?</div>
+            <div class="section-title">Todo lo que necesitas en un solo lugar</div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">&#128197;</div>
+                    <h3>Inscripcion a eventos</h3>
+                    <p>Consulta los eventos disponibles e inscribete facilmente. El sistema valida cupos y cruces de horario automaticamente.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#127919;</div>
+                    <h3>Gestion de eventos</h3>
+                    <p>Los administradores pueden crear, editar, activar o desactivar eventos y programar fechas de inscripcion.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#128101;</div>
+                    <h3>Equipos</h3>
+                    <p>Participa en eventos grupales. Crea o unete a un equipo directamente desde el sistema.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#128202;</div>
+                    <h3>Reportes</h3>
+                    <p>Consulta reportes detallados de eventos e inscripciones para tener visibilidad completa de la participacion.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#128274;</div>
+                    <h3>Roles y accesos</h3>
+                    <p>El sistema diferencia entre roles ADMIN y APRENDIZ, cada uno con permisos especificos segun su funcion.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#129302;</div>
+                    <h3>Asistente virtual</h3>
+                    <p>Tienes dudas? El chatbot de EventPlanner esta disponible para ayudarte en cualquier momento.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="instrucciones-bg">
+        <div class="section">
+            <div class="section-label">Como empiezo?</div>
+            <div class="section-title">Registrate en 4 pasos simples</div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div>
+                        <h4>Crea tu cuenta</h4>
+                        <p>Haz clic en "Registrarse" e ingresa tus datos personales y de formacion.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div>
+                        <h4>Usa tu correo SENA</h4>
+                        <p>Debes registrarte con tu correo institucional <strong>@@soy.sena.edu.co</strong></p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <div>
+                        <h4>Inicia sesion</h4>
+                        <p>Con tu correo y contrasena accede al panel principal del sistema.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">4</div>
+                    <div>
+                        <h4>Inscribete a eventos</h4>
+                        <p>Explora los eventos disponibles y registrate con un solo clic.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="requisito-box">
+                <div class="icon">&#9888;&#65039;</div>
+                <p><strong>Requisito importante:</strong> Solo se aceptan correos institucionales con dominio <strong>@@soy.sena.edu.co</strong>. Si no tienes uno, contacta a tu instructor o administrador del centro.</p>
+            </div>
+        </div>
+    </div>
+
+    <section class="cta-section">
+        <h2>Listo para participar?</h2>
+        <p>Unete a EventPlanner y no te pierdas ningun evento del SENA.</p>
+        <div class="cta-btns">
+            @Html.ActionLink("Iniciar sesion", "Login", "Usuario", null, new { @class = "btn-hero-solid" })
+            @Html.ActionLink("Crear cuenta gratis", "Registro", "Usuario", null, new { @class = "btn-hero-outline" })
+        </div>
+    </section>
+
+    <footer>
+        <strong>EventPlanner</strong> &middot; Centro para la Industria Petroquimica &middot; SENA Cartagena, Colombia
+    </footer>
+
+</body>
+</html>

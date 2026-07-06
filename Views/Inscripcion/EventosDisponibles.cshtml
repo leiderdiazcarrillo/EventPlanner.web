@@ -1,0 +1,38 @@
+@model List<EventPlanner.Web.Models.Evento>
+@{ ViewBag.Title = "Eventos Disponibles"; }
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">Eventos Disponibles</h4>
+</div>
+@if (TempData["Exito"] != null) {
+    <div class="alert alert-success alert-dismissible fade show">@TempData["Exito"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+}
+@if (Model == null || Model.Count == 0) {
+    <div class="alert alert-info">No hay eventos disponibles para inscripcion en este momento.</div>
+} else {
+    <div class="row g-4">
+        @foreach (var ev in Model) {
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100">
+                    <div class="card-header card-header-ep">
+                        <strong>@ev.NombreEvento</strong>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-1">
+                            <span class="badge bg-secondary">@ev.NombreTipoEvento</span>
+                            <span class="badge bg-info text-dark ms-1">@ev.Modalidad</span>
+                        </p>
+                        <p class="mb-1"><strong>Fecha:</strong> @ev.FechaEvento.ToString("dd/MM/yyyy")</p>
+                        <p class="mb-1"><strong>Horario:</strong> @ev.HoraInicio.ToString(@"hh\:mm") - @ev.HoraFin.ToString(@"hh\:mm")</p>
+                        <p class="mb-1"><strong>Lugar:</strong> @ev.Lugar</p>
+                        <p class="mb-2 small text-muted">@ev.Descripcion</p>
+                        <p class="mb-0"><span class="badge bg-primary">Cupos: @ev.CuposTotales</span></p>
+                        <p class="mb-0 small text-muted mt-1">Inscripciones hasta @ev.FechaFinInscripcion.ToString("dd/MM/yyyy")</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="@Url.Action("Inscribirse","Inscripcion",new{id=ev.IdEvento})" class="btn btn-ep w-100">Ver e Inscribirme</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

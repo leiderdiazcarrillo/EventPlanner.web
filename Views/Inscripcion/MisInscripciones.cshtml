@@ -1,0 +1,50 @@
+@model List<EventPlanner.Web.Models.Inscripcion>
+@{ ViewBag.Title = "Mis Inscripciones"; }
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">Mis Inscripciones</h4>
+    <a href="@Url.Action("EventosDisponibles","Inscripcion")" class="btn btn-ep btn-sm">Ver eventos disponibles</a>
+</div>
+@if (TempData["Error"] != null) {
+    <div class="alert alert-danger alert-dismissible fade show">@TempData["Error"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+}
+@if (TempData["Exito"] != null) {
+    <div class="alert alert-success alert-dismissible fade show">@TempData["Exito"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+}
+@if (Model == null || Model.Count == 0) {
+    <div class="card"><div class="card-body text-center py-5 text-muted">
+        <p class="mb-2">No tienes inscripciones activas.</p>
+        <a href="@Url.Action("EventosDisponibles","Inscripcion")" class="btn btn-ep">Ver eventos disponibles</a>
+    </div></div>
+} else {
+    <div class="card"><div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr><th>Evento</th><th>Tipo</th><th>Fecha</th><th>Horario</th><th>Lugar</th><th>Modalidad</th><th>Equipo</th><th>F. Inscripcion</th><th class="text-center">Cancelar</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model) {
+                        <tr>
+                            <td class="fw-semibold">@item.NombreEvento</td>
+                            <td><span class="badge bg-secondary">@item.TipoEvento</span></td>
+                            <td>@item.FechaEvento.ToString("dd/MM/yyyy")</td>
+                            <td class="text-nowrap small">@item.HoraInicio.ToString(@"hh\:mm") - @item.HoraFin.ToString(@"hh\:mm")</td>
+                            <td>@item.Lugar</td>
+                            <td>@item.Modalidad</td>
+                            <td>@(string.IsNullOrEmpty(item.NombreEquipo) ? "---" : item.NombreEquipo)</td>
+                            <td class="small">@item.FechaInscripcion.ToString("dd/MM/yyyy")</td>
+                            <td class="text-center">
+                                @using(Html.BeginForm("Cancelar","Inscripcion",FormMethod.Post,
+                                    new{@class="d-inline",onsubmit="return confirm('Cancelar tu inscripcion?');"})){
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="IdInscripcion" value="@item.IdInscripcion"/>
+                                    <button type="submit" class="btn btn-danger btn-sm">Cancelar</button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div></div>
+}

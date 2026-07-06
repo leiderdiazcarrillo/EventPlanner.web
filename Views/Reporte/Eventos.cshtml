@@ -1,0 +1,124 @@
+@model List<EventPlanner.Web.Models.Evento>
+@{ ViewBag.Title = "Reporte de Eventos"; }
+
+<style>
+.stat-card {
+    padding: 15px;
+    border-radius: 8px;
+    color: white;
+    margin-bottom: 15px;
+}
+.table-reporte th {
+    background-color: #00843D !important;
+    color: white !important;
+    font-weight: 600;
+}
+
+@@media print {
+    header, footer, nav, .sidebar, .navbar, .btn, button, .d-flex button {
+        display: none !important;
+    }
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+    .container, .container-fluid, main, .card, .card-body {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: white !important;
+    }
+    .table-responsive {
+        overflow: visible !important;
+        overflow-x: visible !important;
+        display: block !important;
+        width: 100% !important;
+    }
+    .table-reporte {
+        width: 100% !important;
+        table-layout: fixed !important;
+        border-collapse: collapse !important;
+        margin-top: 20px !important;
+        font-size: 10px !important;
+    }
+    .table-reporte th {
+        background-color: #00843D !important;
+        color: white !important;
+        padding: 8px 4px !important;
+        border: 1px solid #333333 !important;
+        text-transform: uppercase;
+    }
+    .table-reporte td {
+        padding: 6px 4px !important;
+        border: 1px solid #dddddd !important;
+        vertical-align: middle !important;
+    }
+    .table-reporte th, .table-reporte td {
+        word-wrap: break-word !important;
+        white-space: normal !important;
+    }
+    .table-reporte tbody tr:nth-child(even) {
+        background-color: #f9f9f9 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    .text-center a {
+        display: none !important;
+    }
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">Reporte de Eventos</h4>
+    <button onclick="window.print()" class="btn btn-outline-secondary btn-sm">Imprimir</button>
+</div>
+<div class="row g-3 mb-4">
+    <div class="col-12 col-sm-4"><div class="stat-card" style="background:linear-gradient(135deg,#00843D,#005a2b);"><p class="mb-1 small">Total Eventos</p><h2>@(Model!=null?Model.Count:0)</h2></div></div>
+    <div class="col-12 col-sm-4"><div class="stat-card" style="background:linear-gradient(135deg,#0d6efd,#084298);"><p class="mb-1 small">Activos</p><h2>@(Model!=null?Model.FindAll(e=>e.Activo).Count:0)</h2></div></div>
+    <div class="col-12 col-sm-4"><div class="stat-card" style="background:linear-gradient(135deg,#dc3545,#842029);"><p class="mb-1 small">Inactivos</p><h2>@(Model!=null?Model.FindAll(e=>!e.Activo).Count:0)</h2></div></div>
+</div>
+<div class="card">
+    <div class="card-header card-header-ep fw-semibold">Listado de Eventos</div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-reporte mb-0">
+                <thead>
+                    <tr><th>Evento</th><th>Tipo</th><th>Fecha</th><th>Horario</th><th>Modalidad</th><th>Lugar</th><th class="text-center">Cupos</th><th class="text-center">Inscritos</th><th class="text-center">Estado</th></tr>
+                </thead>
+                <tbody>
+                    @if (Model==null||Model.Count==0) {
+                        <tr><td colspan="9" class="text-center text-muted py-4">Sin eventos.</td></tr>
+                    } else {
+                        foreach(var item in Model){
+                            <tr>
+                                <td class="fw-semibold">@item.NombreEvento</td>
+                                <td>@item.NombreTipoEvento</td>
+                                <td>@item.FechaEvento.ToString("dd/MM/yyyy")</td>
+                                <td>@item.HoraInicio.ToString(@"hh\:mm") - @item.HoraFin.ToString(@"hh\:mm")</td>
+                                <td>@item.Modalidad</td>
+                                <td>@item.Lugar</td>
+                                <td class="text-center">@item.CuposTotales</td>
+                                <td class="text-center">
+                                    <span class="d-print-inline d-none">@item.CuposOcupados</span>
+                                    <a href="@Url.Action("Inscritos","Reporte",new{id=item.IdEvento})" class="btn btn-sm btn-outline-primary d-print-none">Ver (@item.CuposOcupados)</a>
+                                </td>
+                                <td class="text-center">
+                                    @if(item.Activo){<span class="text-success fw-bold">Activo</span>}
+                                    else{<span class="text-danger fw-bold">Inactivo</span>}
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

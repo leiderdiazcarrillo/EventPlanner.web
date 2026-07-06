@@ -1,0 +1,160 @@
+@model EventPlanner.Web.Models.Evento
+@{ ViewBag.Title = "Crear Evento"; }
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">Crear Nuevo Evento</h4>
+    <a href="@Url.Action("Index","Evento")" class="btn btn-outline-secondary btn-sm">Volver</a>
+</div>
+<div class="card">
+    <div class="card-header card-header-ep fw-semibold">Informacion del Evento</div>
+    <div class="card-body">
+        @using (Html.BeginForm("Crear", "Evento", FormMethod.Post, new { id = "formEvento", novalidate = "novalidate" }))
+
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" })
+        <div class="row g-3">
+
+            <div class="col-md-8">
+                <label class="form-label fw-semibold">Nombre del Evento *</label>
+                @Html.TextBoxFor(m => m.NombreEvento, new { @class = "form-control", id = "txtNombre", placeholder = "Nombre del evento", required = "required" })
+                <div id="msgNombre" class="val-msg"></div>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Tipo de Evento *</label>
+                @Html.DropDownListFor(m => m.IdTipoEvento, (SelectList)ViewBag.TipoEventos, "-- Seleccionar --", new { @class = "form-select", id = "selTipo", required = "required" })
+                <div id="msgTipo" class="val-msg"></div>
+            </div>
+            <div class="col-md-12">
+                <label class="form-label fw-semibold">Descripcion *</label>
+                @Html.TextAreaFor(m => m.Descripcion, new { @class = "form-control", rows = 3, id = "txtDesc", placeholder = "Descripcion del evento", required = "required" })
+                <div id="msgDesc" class="val-msg"></div>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Modalidad *</label>
+                @Html.DropDownListFor(m => m.Modalidad, (SelectList)ViewBag.Modalidades, "-- Seleccionar --", new { @class = "form-select", id = "selModalidad", required = "required" })
+                <div id="msgModalidad" class="val-msg"></div>
+            </div>
+            <div class="col-md-8">
+                <label class="form-label fw-semibold">Lugar *</label>
+                @Html.TextBoxFor(m => m.Lugar, new { @class = "form-control", id = "txtLugar", placeholder = "Lugar del evento", required = "required" })
+                <div id="msgLugar" class="val-msg"></div>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Fecha del Evento *</label>
+                <input type="date" name="FechaEvento" id="fechaEvento" class="form-control" value="" required />
+                <div id="msgFechaEvento" class="val-msg"></div>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Hora Inicio *</label>
+                <input type="time" name="HoraInicio" id="horaInicio" class="form-control" value="" required step="60" />
+                <div id="msgHoraInicio" class="val-msg"></div>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Hora Fin *</label>
+                <input type="time" name="HoraFin" id="horaFin" class="form-control" value="" required step="60" />
+                <div id="msgHoraFin" class="val-msg"></div>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Cupos Totales *</label>
+                @Html.TextBoxFor(m => m.CuposTotales, new { type = "number", @class = "form-control", min = "1", max = "2000", id = "txtCupos", required = "required" })
+                <div id="msgCupos" class="val-msg"></div>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Inicio Inscripciones *</label>
+                <input type="date" name="FechaInicioInscripcion" id="fechaInicioIns" class="form-control" value="" required />
+                <div id="msgFechaInicioIns" class="val-msg"></div>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Cierre Inscripciones *</label>
+                <input type="date" name="FechaFinInscripcion" id="fechaFinIns" class="form-control" value="" required />
+                <div id="msgFechaFinIns" class="val-msg"></div>
+            </div>
+
+
+
+        </div>
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-ep">Guardar Evento</button>
+                <a href="@Url.Action("Index","Evento")" class="btn btn-outline-secondary">Cancelar</a>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts {
+<script>
+(function(){
+    var hoy = new Date().toISOString().split('T')[0];
+    var fe = document.getElementById('fechaEvento');
+    var hi = document.getElementById('horaInicio');
+    var hf = document.getElementById('horaFin');
+    var fi = document.getElementById('fechaInicioIns');
+    var ff = document.getElementById('fechaFinIns');
+    if(fe){ fe.min = hoy; }
+    if(fi){ fi.min = hoy; }
+    if(ff){ ff.min = hoy; }
+
+    function show(id, msg, ok){
+        var el = document.getElementById(id);
+        if(!el) return;
+        el.textContent = msg;
+        el.className = 'val-msg ' + (ok ? 'ok' : 'error');
+        var inp = el.previousElementSibling;
+        if(inp){ inp.classList.toggle('field-error',!ok); inp.classList.toggle('field-ok',ok); }
+    }
+
+    function v(id, cond, msg){ show(id, cond ? 'Valido' : msg, cond); }
+
+    var n = document.getElementById('txtNombre');
+    if(n) n.addEventListener('input', function(){ v('msgNombre', this.value.trim().length>=3, 'Minimo 3 caracteres'); });
+
+    var t = document.getElementById('selTipo');
+    if(t) t.addEventListener('change', function(){ v('msgTipo', !!this.value, 'Selecciona un tipo'); });
+
+    var d = document.getElementById('txtDesc');
+    if(d) d.addEventListener('input', function(){ v('msgDesc', this.value.trim().length>=10, 'Minimo 10 caracteres'); });
+
+    var m = document.getElementById('selModalidad');
+    if(m) m.addEventListener('change', function(){ v('msgModalidad', !!this.value, 'Selecciona modalidad'); });
+
+    var l = document.getElementById('txtLugar');
+    if(l) l.addEventListener('input', function(){ v('msgLugar', this.value.trim().length>=3, 'Ingresa el lugar'); });
+
+    var c = document.getElementById('txtCupos');
+    if(c) c.addEventListener('input', function(){ var x=parseInt(this.value); v('msgCupos', !isNaN(x)&&x>=1&&x<=2000, 'Entre 1 y 2000'); });
+
+    function valHoras(){
+        if(hi&&hf&&hi.value&&hf.value){
+            var ok = hf.value > hi.value;
+            show('msgHoraInicio', ok ? 'Valido' : '', ok||!hi.value);
+            v('msgHoraFin', ok, 'La hora fin debe ser mayor a la hora inicio');
+        }
+    }
+    if(hi) hi.addEventListener('change', valHoras);
+    if(hf) hf.addEventListener('change', valHoras);
+
+    function valFechas(){
+        var evV = fe ? fe.value : '';
+        var iniV = fi ? fi.value : '';
+        var finV = ff ? ff.value : '';
+        if(fe&&fe.value) v('msgFechaEvento', fe.value>=hoy, 'No puede ser una fecha pasada');
+        if(fi&&fi.value) v('msgFechaInicioIns', !evV||(iniV<=evV), 'Debe ser antes o igual al evento');
+        if(ff&&ff.value){
+            var okFin = (!iniV||(finV>=iniV)) && (!evV||(finV<=evV));
+            v('msgFechaFinIns', okFin, 'El cierre debe ser posterior al inicio y no superar el día del evento');
+        }
+    }
+    if(fe) fe.addEventListener('change', valFechas);
+    if(fi) fi.addEventListener('change', valFechas);
+    if(ff) ff.addEventListener('change', valFechas);
+
+    var form = document.getElementById('formEvento');
+    if(form) form.addEventListener('submit', function(e){
+        if(document.querySelectorAll('.val-msg.error').length > 0){
+            e.preventDefault();
+            alert('Corrige los errores antes de guardar.');
+        }
+    });
+})();
+</script>
+}

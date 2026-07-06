@@ -1,0 +1,73 @@
+@{ ViewBag.Title = "Recuperar Contrasena"; }
+
+<div class="d-flex justify-content-center align-items-center" style="min-height:80vh;">
+    <div class="card shadow-sm w-100" style="max-width:460px;">
+        <div class="card-header card-header-ep fw-semibold text-center">Recuperar Contraseña</div>
+        <div class="card-body text-center">
+            @if (ViewBag.TipoMensaje == "exito")
+            {
+                <div class="alert alert-success text-center">
+                    <strong>@ViewBag.Nombre</strong>, @ViewBag.Mensaje<br />
+                    <h4 class="mt-2 fw-bold text-success">@ViewBag.ContrasenaTemp</h4>
+                    <small class="text-muted">Guardala y cambiala despues de iniciar sesion.</small>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="@Url.Action("Login","Usuario")" class="btn btn-ep">Ir al Login</a>
+                </div>
+            }
+            else
+            {
+                if (ViewBag.TipoMensaje == "error")
+                {
+                    <div class="alert alert-danger text-center">@ViewBag.Mensaje</div>
+                }
+                <p class="text-muted small mb-3">Ingresa tu correo institucional y numero de documento para recuperar tu contraseña.</p>
+                using (Html.BeginForm("RecuperarContrasena", "Usuario", FormMethod.Post, new { id = "formRec" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold d-block text-center">Correo Institucional *</label>
+                        <input type="email" name="correo" id="txtCorreo" class="form-control text-center" placeholder="usuario@soy.sena.edu.co" required />
+                        <div id="msgCorreo" class="val-msg text-center"></div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold d-block text-center">Numero de Documento *</label>
+                        <input type="text" name="numeroDocumento" id="txtDoc" class="form-control text-center" placeholder="Ej: 1007123456" required />
+                        <div id="msgDoc" class="val-msg text-center"></div>
+                    </div>
+                    <button type="submit" class="btn btn-ep w-100">Recuperar Contraseña</button>
+                }
+                <div class="text-center mt-3">
+                    <a href="@Url.Action("Login","Usuario")" class="text-muted small">Volver al Login</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        (function () {
+            function show(id, msg, ok) {
+                var el = document.getElementById(id); if (!el) return;
+                el.textContent = msg; el.className = 'val-msg ' + (ok ? 'ok' : 'error');
+                var inp = el.previousElementSibling;
+                if (inp) { inp.classList.toggle('field-error', !ok); inp.classList.toggle('field-ok', ok); }
+            }
+            var c = document.getElementById('txtCorreo');
+            if (c) c.addEventListener('input', function () {
+                var ok = this.value.trim().endsWith('@@soy.sena.edu.co');
+                show('msgCorreo', ok ? 'Valido' : 'Debe ser correo @@soy.sena.edu.co', ok);
+            });
+            var d = document.getElementById('txtDoc');
+            if (d) d.addEventListener('input', function () {
+                var ok = /^[0-9]{6,12}$/.test(this.value.trim());
+                show('msgDoc', ok ? 'Valido' : 'Solo numeros, entre 6 y 12 digitos', ok);
+            });
+            var f = document.getElementById('formRec');
+            if (f) f.addEventListener('submit', function (e) {
+                if (document.querySelectorAll('.val-msg.error').length > 0) { e.preventDefault(); alert('Corrige los errores.'); }
+            });
+        })();
+    </script>
+}

@@ -1,0 +1,84 @@
+@model EventPlanner.Web.Models.LoginViewModel
+
+@{
+    ViewBag.Title = "Iniciar Sesion";
+}
+
+<link href="~/Content/Registro.css" rel="stylesheet" />
+
+<div class="contenedor-registro" style="text-align: center !important;">
+
+    <h2 class="titulo-registro" style="text-align: center !important;">Iniciar Sesion</h2>
+
+    @using (Html.BeginForm("Login", "Usuario", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="grupo-formulario" style="text-align: center !important; display: flex; flex-direction: column; align-items: center;">
+            <label for="Correo" style="text-align: center !important; display: block; width: 100%;">Correo Electronico</label>
+            <input type="email" name="Correo" id="Correo" placeholder="ejemplo@soy.sena.edu.co" required style="text-align: center !important; margin: 0 auto;" />
+            <div id="mensajeCorreo" style="width: 100%; text-align: center !important;"></div>
+        </div>
+
+        <div class="grupo-formulario" style="text-align: center !important; display: flex; flex-direction: column; align-items: center; margin-top: 15px;">
+            <label for="Contrasena" style="text-align: center !important; display: block; width: 100%;">Contraseña</label>
+            <input type="password" name="Contrasena" id="Contrasena" placeholder="" required style="text-align: center !important; margin: 0 auto;" />
+            <div id="mensajeContrasena" style="width: 100%; text-align: center !important;"></div>
+        </div>
+
+        <button type="submit" class="btn-registro" id="btnIngresar" disabled style="margin: 20px auto 0 auto; display: block;">
+            Ingresar
+        </button>
+    }
+
+    <div style="text-align: center !important; width: 100% !important; display: block !important; margin-top: 25px !important;">
+        <a href="@Url.Action("RecuperarContrasena","Usuario")" style="color: #6c757d; font-size: 0.875rem; text-decoration: none; display: inline-block !important;">
+            Olvidaste tu contraseña?
+        </a>
+    </div>
+
+    <div style="text-align: center !important; width: 100% !important; display: block !important; margin-top: 25px !important; color: #212529;">
+        No tienes cuenta?<br />
+        <a href="/Usuario/Registro" style="color: #00843D; font-weight: bold; text-decoration: none; display: inline-block !important; margin-top: 5px !important;">
+            Registrate aqui
+        </a>
+    </div>
+
+    @if (ViewBag.Mensaje != null)
+    {
+        <div class="@(ViewBag.EsError == true ? "alerta-error" : "alerta-ok")" style="margin-top:16px; text-align: center !important;">
+            @ViewBag.Mensaje
+        </div>
+    }
+
+    <script>
+        var correo = document.getElementById("Correo");
+        var contrasena = document.getElementById("Contrasena");
+        var msgCorreo = document.getElementById("mensajeCorreo");
+        var msgPass = document.getElementById("mensajeContrasena");
+        var btn = document.getElementById("btnIngresar");
+
+        function validar() {
+            var okCorreo = correo.value.endsWith("@@soy.sena.edu.co");
+            var okPass = contrasena.value.length >= 6 && contrasena.value.length <= 8;
+            btn.disabled = !(okCorreo && okPass);
+        }
+
+        correo.addEventListener("input", function () {
+            msgCorreo.innerHTML = correo.value.endsWith("@@soy.sena.edu.co")
+                ? "<div class='alerta-ok' style='text-align:center !important;'>Correo valido</div>"
+                : "<div class='alerta-error' style='text-align:center !important;'>Debe usar correo institucional @@soy.sena.edu.co</div>";
+            validar();
+        });
+
+        contrasena.addEventListener("input", function () {
+            var ok = contrasena.value.length >= 6 && contrasena.value.length <= 8;
+            msgPass.innerHTML = ok
+                ? "<div class='alerta-ok' style='text-align:center !important;'>Contrasena valida</div>"
+                : "<div class='alerta-error' style='text-align:center !important;'>Debe tener entre 6 y 8 caracteres</div>";
+            validar();
+        });
+
+        validar();
+    </script>
+</div>

@@ -1,0 +1,104 @@
+@model List<EventPlanner.Web.Models.Equipo>
+@{ ViewBag.Title = "Equipos del Evento"; int IdEvento = ViewBag.EventoId != null ? (int)ViewBag.EventoId : 0; }
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">Equipos del Evento</h4>
+    <a href="@Url.Action("Index","Evento")" class="btn btn-outline-secondary btn-sm">Volver a Eventos</a>
+</div>
+@if (TempData["Mensaje"] != null) {
+    <div class="alert alert-success alert-dismissible fade show">@TempData["Mensaje"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+}
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header card-header-ep fw-semibold">Agregar Equipo</div>
+            <div class="card-body">
+                @using (Html.BeginForm("Crear","Equipo",FormMethod.Post,new{id="formEquipo"})) {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="IdEvento" value="@IdEvento" />
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Nombre del Equipo *</label>
+                        <input type="text" name="NombreEquipo" id="txtNomEq" class="form-control" placeholder="Ej: Equipo A" required minlength="2" maxlength="100"/>
+                        <div id="msgNomEq" class="val-msg"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Cantidad Minima *</label>
+                        <input type="number" name="CantidadMinima" id="txtMin" class="form-control" min="1" value="3" required/>
+                        <div id="msgMin" class="val-msg"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Cantidad Maxima *</label>
+                        <input type="number" name="CantidadMaxima" id="txtMax" class="form-control" min="1" value="5" required/>
+                        <div id="msgMax" class="val-msg"></div>
+                    </div>
+                    <button type="submit" class="btn btn-ep w-100">Agregar Equipo</button>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header card-header-ep fw-semibold d-flex justify-content-between">
+                <span>Equipos registrados</span>
+                <span class="badge bg-light text-dark">@(Model != null ? Model.Count : 0)</span>
+            </div>
+            <div class="card-body p-0">
+                @if (Model == null || Model.Count == 0) {
+                    <div class="p-4 text-center text-muted">No hay equipos para este evento.</div>
+                } else {
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr><th>#</th><th>Nombre del Equipo</th><th class="text-center">Min</th><th class="text-center">Max</th><th class="text-center">Eliminar</th></tr>
+                        </thead>
+                        <tbody>
+                            @{ int i=1; }
+                            @foreach(var eq in Model) {
+                                <tr>
+                                    <td>@i</td>
+                                    <td class="fw-semibold">@eq.NombreEquipo</td>
+                                    <td class="text-center">@eq.CantidadMinima</td>
+                                    <td class="text-center">@eq.CantidadMaxima</td>
+                                    <td class="text-center">
+                                        @using(Html.BeginForm("Eliminar","Equipo",FormMethod.Post,
+                                            new{@class="d-inline",onsubmit="return confirm('Eliminar equipo?');"})) {
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@eq.IdEquipo"/>
+                                            <input type="hidden" name="IdEvento" value="@IdEvento"/>
+                                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                                        }
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+<script>
+(function(){
+    function show(id,msg,ok){
+        var el=document.getElementById(id); if(!el)return;
+        el.textContent=msg; el.className='val-msg '+(ok?'ok':'error');
+        var inp=el.previousElementSibling;
+        if(inp){inp.classList.toggle('field-error',!ok);inp.classList.toggle('field-ok',ok);}
+    }
+    var n=document.getElementById('txtNomEq');
+    if(n) n.addEventListener('input',function(){show('msgNomEq',this.value.trim().length>=2?'Valido':'Minimo 2 caracteres',this.value.trim().length>=2);});
+    function valMM(){
+        var mn=parseInt(document.getElementById('txtMin').value);
+        var mx=parseInt(document.getElementById('txtMax').value);
+        show('msgMin',isNaN(mn)||mn<1?'Minimo 1':'Valido',!isNaN(mn)&&mn>=1);
+        show('msgMax',isNaN(mx)||mx<1?'Minimo 1':mx<mn?'Maximo debe ser >= minimo':'Valido',!isNaN(mx)&&mx>=1&&mx>=mn);
+    }
+    var mn=document.getElementById('txtMin'); if(mn) mn.addEventListener('input',valMM);
+    var mx=document.getElementById('txtMax'); if(mx) mx.addEventListener('input',valMM);
+    var f=document.getElementById('formEquipo');
+    if(f) f.addEventListener('submit',function(e){
+        if(document.querySelectorAll('.val-msg.error').length>0){e.preventDefault();alert('Corrige los errores.');}
+    });
+})();
+</script>
+}

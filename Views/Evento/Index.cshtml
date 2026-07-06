@@ -1,0 +1,74 @@
+@model List<EventPlanner.Web.Models.Evento>
+@{ ViewBag.Title = "Gestion de Eventos"; }
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">Gestion de Eventos</h4>
+    <a href="@Url.Action("Crear","Evento")" class="btn btn-ep">+ Nuevo Evento</a>
+</div>
+@if (TempData["Advertencia"] != null) {
+    <div class="alert alert-warning alert-dismissible fade show">
+        @TempData["Advertencia"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Mensaje"] != null) {
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["Mensaje"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nombre del Evento</th><th>Tipo</th><th>Fecha</th>
+                        <th>Horario</th><th>Modalidad</th><th>Lugar</th>
+                        <th class="text-center">Cupos</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model == null || Model.Count == 0) {
+                        <tr><td colspan="9" class="text-center text-muted py-4">No hay eventos registrados.</td></tr>
+                    } else {
+                        foreach (var item in Model) {
+                            <tr>
+                                <td class="fw-semibold">@item.NombreEvento</td>
+                                <td><span class="badge bg-secondary">@item.NombreTipoEvento</span></td>
+                                <td>@item.FechaEvento.ToString("dd/MM/yyyy")</td>
+                                <td class="text-nowrap small">@item.HoraInicio.ToString(@"hh\:mm") - @item.HoraFin.ToString(@"hh\:mm")</td>
+                                <td>@item.Modalidad</td>
+                                <td>@item.Lugar</td>
+                                <td class="text-center">@item.CuposTotales</td>
+                                <td class="text-center">
+                                    @if (item.Activo) {
+                                        <span class="badge badge-activo px-2 py-1">Activo</span>
+                                    } else {
+                                        <span class="badge badge-inactivo px-2 py-1">Inactivo</span>
+                                    }
+                                </td>
+                                <td class="text-center text-nowrap">
+                                    <a href="@Url.Action("Editar","Evento",new{id=item.IdEvento})" class="btn btn-warning btn-sm" title="Editar">Editar</a>
+                                    <a href="@Url.Action("CambiarEstado","Evento",new{id=item.IdEvento})"
+                                       class="btn btn-sm ms-1 @(item.Activo ? "btn-outline-secondary" : "btn-outline-success")"
+                                       title="@(item.Activo ? "Desactivar" : "Activar")">
+                                        @(item.Activo ? "Desactivar" : "Activar")
+                                    </a>
+                                    <a href="@Url.Action("Equipos","Evento",new{id=item.IdEvento})" class="btn btn-info btn-sm ms-1" title="Equipos">Equipos</a>
+                                    <a href="@Url.Action("Inscritos","Reporte",new{id=item.IdEvento})" class="btn btn-primary btn-sm ms-1" title="Inscritos">Inscritos</a>
+                                    @using (Html.BeginForm("Eliminar","Evento",FormMethod.Post,
+                                        new{@class="d-inline ms-1",onsubmit="return confirm('Eliminar este evento y sus inscripciones?');"})) {
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" name="id" value="@item.IdEvento" class="btn btn-danger btn-sm">Eliminar</button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

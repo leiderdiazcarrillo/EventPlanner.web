@@ -1,0 +1,56 @@
+@model EventPlanner.Web.Models.Evento
+@{
+    ViewBag.Title = "Inscribirse al Evento";
+    bool yaInscrito = ViewBag.YaInscrito != null && (bool)ViewBag.YaInscrito;
+    var equipos = ViewBag.Equipos as List<EventPlanner.Web.Models.Equipo>;
+}
+<div class="container" style="max-width:700px;">
+    <a href="@Url.Action("EventosDisponibles","Inscripcion")" class="btn btn-outline-secondary btn-sm mb-3">Volver a eventos</a>
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+    <div class="card">
+        <div class="card-header card-header-ep"><h5 class="mb-0">@Model.NombreEvento</h5></div>
+        <div class="card-body">
+            <table class="table table-borderless mb-3">
+                <tr><th>Tipo</th><td>@Model.NombreTipoEvento</td></tr>
+                <tr><th>Fecha</th><td>@Model.FechaEvento.ToString("dd/MM/yyyy")</td></tr>
+                <tr><th>Horario</th><td>@Model.HoraInicio.ToString(@"hh\:mm") - @Model.HoraFin.ToString(@"hh\:mm")</td></tr>
+                <tr><th>Lugar</th><td>@Model.Lugar</td></tr>
+                <tr><th>Modalidad</th><td>@Model.Modalidad</td></tr>
+                <tr><th>Cupos</th><td>@Model.CuposTotales</td></tr>
+                <tr><th>Descripcion</th><td>@Model.Descripcion</td></tr>
+            </table>
+            @if (yaInscrito)
+            {
+                <div class="alert alert-success">
+                    Ya estas inscrito en este evento.
+                    <a href="@Url.Action("MisInscripciones","Inscripcion")" class="btn btn-sm btn-outline-success ms-3">Ver mis inscripciones</a>
+                </div>
+            }
+            else
+            {
+                using (Html.BeginForm("ConfirmarInscripcion", "Inscripcion", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="IdEvento" value="@Model.IdEvento" />
+                    if (Model.Modalidad == "EQUIPO" && equipos != null && equipos.Count > 0)
+                    {
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Selecciona tu equipo *</label>
+                            <select name="IdEquipo" class="form-select" required>
+                                <option value="">-- Seleccionar equipo --</option>
+                                @foreach (var eq in equipos)
+                                {
+                                    <option value="@eq.IdEquipo">@eq.NombreEquipo (min @eq.CantidadMinima - max @eq.CantidadMaxima)</option>
+                                }
+                            </select>
+                        </div>
+                    }
+                    <button type="submit" class="btn btn-ep w-100">Confirmar Inscripcion</button>
+                }
+            }
+        </div>
+    </div>
+</div>

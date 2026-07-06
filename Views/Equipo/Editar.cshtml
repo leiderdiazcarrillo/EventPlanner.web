@@ -1,0 +1,71 @@
+@model EventPlanner.Web.Models.Equipo
+@{ ViewBag.Title = "Editar Equipo"; }
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-7 col-lg-6">
+        <div class="card">
+            <div class="card-header card-header-ep py-3">
+                <h5 class="mb-0 fw-bold">&#x270F; Editar Equipo</h5>
+            </div>
+            <div class="card-body p-4">
+
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" })
+
+                @using (Html.BeginForm("Editar", "Equipo", FormMethod.Post, new { id = "formEquipo" })) {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.IdEquipo)
+
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.IdEvento, "Evento", new { @class = "form-label fw-semibold" })
+                        @Html.DropDownListFor(m => m.IdEvento, (SelectList)ViewBag.Eventos,
+                            "-- Seleccionar evento --",
+                            new { @class = "form-select", required = "required" })
+                    </div>
+
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.NombreEquipo, new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.NombreEquipo,
+                            new { @class = "form-control", placeholder = "Nombre del equipo", required = "required", maxlength = "100" })
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            @Html.LabelFor(m => m.CantidadMinima, "Min. integrantes", new { @class = "form-label fw-semibold" })
+                            @Html.TextBoxFor(m => m.CantidadMinima,
+                                new { @class = "form-control", type = "number", id = "txtMin", min = "1", required = "required" })
+                            <div id="msgMin" class="text-danger small mt-1"></div>
+                        </div>
+                        <div class="col-6">
+                            @Html.LabelFor(m => m.CantidadMaxima, "Max. integrantes", new { @class = "form-label fw-semibold" })
+                            @Html.TextBoxFor(m => m.CantidadMaxima,
+                                new { @class = "form-control", type = "number", id = "txtMax", min = "1", required = "required" })
+                            <div id="msgMax" class="text-danger small mt-1"></div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-sm-flex">
+                        <button type="submit" class="btn btn-ep flex-sm-fill">Guardar Cambios</button>
+                        @Html.ActionLink("Cancelar", "Index", "Equipo", null,
+                            new { @class = "btn btn-outline-secondary flex-sm-fill" })
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+<script>
+document.getElementById('formEquipo').addEventListener('submit', function(e) {
+    var min = parseInt(document.getElementById('txtMin').value) || 0;
+    var max = parseInt(document.getElementById('txtMax').value) || 0;
+    document.getElementById('msgMin').textContent = '';
+    document.getElementById('msgMax').textContent = '';
+    if (min > max) {
+        e.preventDefault();
+        document.getElementById('msgMin').textContent = 'El minimo no puede superar el maximo.';
+        document.getElementById('msgMax').textContent = 'El maximo debe ser mayor o igual al minimo.';
+    }
+});
+</script>
+}

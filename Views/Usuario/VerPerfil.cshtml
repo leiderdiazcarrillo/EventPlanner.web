@@ -1,0 +1,120 @@
+@model EventPlanner.Web.ViewModels.PerfilViewModel
+@{ ViewBag.Title = "Mi Perfil"; }
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-7 col-lg-6">
+        <div class="card">
+            <div class="card-header card-header-ep py-3 text-center">
+                <h5 class="mb-0 fw-bold">&#x1F464; Mi Perfil</h5>
+            </div>
+            <div class="card-body p-4">
+
+                @if (ViewBag.TipoMensaje != null)
+                {
+                    <div class="alert @(ViewBag.TipoMensaje == "exito" ? "alert-success" : "alert-danger") alert-dismissible fade show text-center">
+                        @ViewBag.Mensaje
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <form action="@Url.Action("VerPerfil","Usuario")" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.IdUsuario)
+
+                    <div class="text-center mb-4">
+                        <div class="position-relative d-inline-block">
+                            <img id="previewFoto"
+                                 src="@(string.IsNullOrEmpty(Model.FotoPerfil) ? "/Content/Fotos/default-avatar.svg" : Model.FotoPerfil)"
+                                 alt="Foto de perfil"
+                                 class="rounded-circle border"
+                                 style="width:90px;height:90px;object-fit:cover;border-color:#00843D !important;border-width:3px !important;" />
+                            <label for="FotoArchivo"
+                                   class="position-absolute bottom-0 end-0 bg-white rounded-circle shadow"
+                                   style="cursor:pointer;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:1px solid #dee2e6;">
+                                &#x1F4F7;
+                            </label>
+                        </div>
+                        <input type="file" id="FotoArchivo" name="FotoArchivo" accept="image/*" class="d-none" onchange="previewImagen(this)" />
+                        <div class="small text-muted mt-1 text-center">Haz clic en la cámara para cambiar tu foto</div>
+                    </div>
+
+                    <div class="mb-3 text-center">
+                        <label class="form-label fw-semibold d-block">Nombre Completo</label>
+                        @Html.TextBoxFor(m => m.NombreCompleto, new { @class = "form-control text-center", placeholder = "Tu nombre completo", maxlength = "100" })
+                    </div>
+
+                    <div class="mb-3 text-center">
+                        <label class="form-label fw-semibold d-block">Correo Electrónico</label>
+                        <input type="text" class="form-control bg-light text-center" value="@Model.Correo" readonly="readonly" />
+                        <div class="form-text text-center">El correo no se puede modificar.</div>
+                    </div>
+
+                    <div class="mb-4 text-center">
+                        <label class="form-label fw-semibold d-block">Rol</label>
+                        <input type="text" class="form-control bg-light text-center" value="@Model.Rol" readonly="readonly" />
+                    </div>
+
+                    @if (Model.Rol == "APRENDIZ")
+                    {
+                        <hr class="w-50 mx-auto" />
+                        <div class="text-center mb-3">
+                            <h6 class="fw-bold mb-0" style="color:#00843D;">&#x1F512; Cambiar Contraseña</h6>
+                        </div>
+
+                        <div class="mb-3 text-center">
+                            <label class="form-label d-block">Contraseña Actual</label>
+                            <input type="password" name="ContrasenaActual" class="form-control text-center"
+                                   placeholder="Ingresa tu contraseña actual" maxlength="8" autocomplete="current-password" />
+                        </div>
+                        <div class="mb-3 text-center">
+                            <label class="form-label d-block">Nueva Contraseña</label>
+                            <input type="password" name="NuevaContrasena" id="nuevaClave" class="form-control text-center"
+                                   placeholder="Entre 6 y 8 caracteres" maxlength="8" autocomplete="new-password" />
+                            <div class="form-text text-center">La contraseña debe tener entre 6 y 8 caracteres.</div>
+                        </div>
+                        <div class="mb-4 text-center">
+                            <label class="form-label d-block">Confirmar Nueva Contraseña</label>
+                            <input type="password" name="ConfirmarContrasena" id="confirmarClave" class="form-control text-center"
+                                   placeholder="Repite la nueva contraseña" maxlength="8" autocomplete="new-password" />
+                            <div class="form-text text-danger d-none text-center" id="msgConfirmar">Las contraseñas no coinciden.</div>
+                        </div>
+                    }
+
+                    <div class="d-grid col-10 mx-auto">
+                        <button type="submit" class="btn btn-ep py-2 fw-semibold">Guardar Cambios</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        function previewImagen(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('previewFoto').src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        var nueva = document.getElementById('nuevaClave');
+        var confirmar = document.getElementById('confirmarClave');
+        var msg = document.getElementById('msgConfirmar');
+        if (confirmar) {
+            confirmar.addEventListener('input', function () {
+                if (nueva.value && confirmar.value && nueva.value !== confirmar.value) {
+                    msg.classList.remove('d-none');
+                    confirmar.classList.add('is-invalid');
+                } else {
+                    msg.classList.add('d-none');
+                    confirmar.classList.remove('is-invalid');
+                }
+            });
+        }
+    </script>
+}

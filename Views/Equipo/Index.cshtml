@@ -1,0 +1,109 @@
+@model List<EventPlanner.Web.Models.Equipo>
+@{ ViewBag.Title = "Gestionar Equipos"; }
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">Gestionar Equipos</h4>
+    <a href="@Url.Action("Crear","Equipo")" class="btn btn-ep">+ Nuevo Equipo</a>
+</div>
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["Mensaje"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (Model == null || Model.Count == 0)
+{
+    <div class="card">
+        <div class="card-body text-center py-5 text-muted">
+            <p class="mb-2">No hay equipos registrados.</p>
+            <a href="@Url.Action("Crear","Equipo")" class="btn btn-ep">Crear primer equipo</a>
+        </div>
+    </div>
+}
+else
+{
+    <!-- Vista tabla para md+ -->
+    <div class="card d-none d-md-block">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nombre del Equipo</th>
+                            <th>Evento</th>
+                            <th class="text-center">Min</th>
+                            <th class="text-center">Max</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var e in Model)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@e.NombreEquipo</td>
+                                <td>@e.NombreEvento</td>
+                                <td class="text-center">@e.CantidadMinima</td>
+                                <td class="text-center">@e.CantidadMaxima</td>
+                                <td class="text-center text-nowrap">
+                                    <a href="@Url.Action("Editar","Equipo",new{id=e.IdEquipo})"
+                                       class="btn btn-warning btn-sm">Editar</a>
+                                    @using (Html.BeginForm("Eliminar", "Equipo", FormMethod.Post,
+                                        new { @class = "d-inline ms-1", onsubmit = "return confirm('Eliminar este equipo?');" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" name="id" value="@e.IdEquipo"
+                                                class="btn btn-danger btn-sm">
+                                            Eliminar
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vista tarjetas para celular -->
+    <div class="d-md-none">
+        @foreach (var e in Model)
+        {
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="fw-bold mb-0">@e.NombreEquipo</h6>
+                        <!-- CORREGIDO: Se cambió el guion largo corrupto por un guion estándar de texto -->
+                        <span class="badge bg-secondary ms-2">@e.CantidadMinima - @e.CantidadMaxima integrantes</span>
+                    </div>
+                    <p class="text-muted small mb-3">
+                        <i>Evento:</i> @e.NombreEvento
+                    </p>
+                    <div class="d-flex gap-2">
+                        <a href="@Url.Action("Editar","Equipo",new{id=e.IdEquipo})"
+                           class="btn btn-warning btn-sm flex-fill">Editar</a>
+                        @using (Html.BeginForm("Eliminar", "Equipo", FormMethod.Post,
+                            new { @class = "flex-fill", onsubmit = "return confirm('Eliminar este equipo?');" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <button type="submit" name="id" value="@e.IdEquipo"
+                                    class="btn btn-danger btn-sm w-100">
+                                Eliminar
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

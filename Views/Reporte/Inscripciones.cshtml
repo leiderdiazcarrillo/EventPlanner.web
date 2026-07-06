@@ -1,0 +1,140 @@
+@model List<EventPlanner.Web.Models.Inscripcion>
+@{
+    ViewBag.Title = "Reporte de Inscripciones";
+    var eventos = ViewBag.Eventos as List<EventPlanner.Web.Models.Evento>;
+    int? IdEvento = ViewBag.IdEvento as int?;
+}
+
+<style>
+.table-reporte th {
+    background-color: #00843D !important;
+    color: white !important;
+    font-weight: 600;
+}
+
+@@media print {
+    header, footer, nav, .sidebar, .navbar, .btn, button, .card.mb-4, .d-flex button {
+        display: none !important;
+    }
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+    .container, .container-fluid, main, .card, .card-body {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: white !important;
+        overflow: visible !important;
+    }
+    .table-responsive {
+        overflow: visible !important;
+        overflow-x: visible !important;
+        display: block !important;
+        width: 100% !important;
+    }
+    .table-reporte {
+        width: 100% !important;
+        table-layout: fixed !important;
+        border-collapse: collapse !important;
+        margin-top: 20px !important;
+        font-size: 10px !important;
+    }
+    .table-reporte th:nth-child(1), .table-reporte td:nth-child(1) { width: 14% !important; }
+    .table-reporte th:nth-child(2), .table-reporte td:nth-child(2) { width: 18% !important; }
+    .table-reporte th:nth-child(3), .table-reporte td:nth-child(3) { width: 7% !important; }
+    .table-reporte th:nth-child(4), .table-reporte td:nth-child(4) { width: 22% !important; }
+    .table-reporte th:nth-child(5), .table-reporte td:nth-child(5) { width: 13% !important; }
+    .table-reporte th:nth-child(6), .table-reporte td:nth-child(6) { width: 8% !important; }
+    .table-reporte th:nth-child(7), .table-reporte td:nth-child(7) { width: 7% !important; }
+    .table-reporte th:nth-child(8), .table-reporte td:nth-child(8) { width: 4% !important; }
+    .table-reporte th:nth-child(9), .table-reporte td:nth-child(9) { width: 7% !important; }
+
+    .table-reporte th, .table-reporte td {
+        padding: 6px 4px !important;
+        border: 1px solid #dddddd !important;
+        vertical-align: middle !important;
+        word-wrap: break-word !important;
+        white-space: normal !important;
+    }
+    .table-reporte th {
+        background-color: #00843D !important;
+        color: white !important;
+        text-transform: uppercase;
+        font-size: 9px !important;
+    }
+    .table-reporte tbody tr:nth-child(even) {
+        background-color: #f9f9f9 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">Reporte de Inscripciones</h4>
+    <button onclick="window.print()" class="btn btn-outline-secondary btn-sm">Imprimir</button>
+</div>
+<div class="card mb-4">
+    <div class="card-body py-2">
+        @using (Html.BeginForm("Inscripciones", "Reporte", FormMethod.Get, new { @class = "d-flex gap-2 align-items-center" }))
+        {
+            <label class="fw-semibold text-nowrap mb-0">Filtrar por evento:</label>
+            <select name="IdEvento" class="form-select form-select-sm" style="max-width:300px;">
+                <option value="">Todos los eventos</option>
+                @if (eventos != null)
+                {
+                    foreach (var ev in eventos)
+                    {
+                        <option value="@ev.IdEvento" @(IdEvento.HasValue && IdEvento.Value == ev.IdEvento ? "selected" : "")>@ev.NombreEvento</option>
+                    }
+                }
+            </select>
+            <button type="submit" class="btn btn-ep btn-sm">Filtrar</button>
+            if (IdEvento.HasValue)
+            {<a href="@Url.Action("Inscripciones","Reporte")" class="btn btn-outline-secondary btn-sm">Limpiar</a>}
+        }
+    </div>
+</div>
+<div class="card">
+    <div class="card-header card-header-ep d-flex justify-content-between align-items-center">
+        <span class="fw-semibold">Inscripciones</span>
+        <span class="badge bg-light text-dark">Total: @(Model!=null?Model.Count:0)</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-reporte mb-0">
+                <thead>
+                    <tr><th>Aprendiz</th><th>Correo</th><th>Ficha</th><th>Programa</th><th>Evento</th><th>Fecha Evento</th><th>Modalidad</th><th>Equipo</th><th>F. Inscripcion</th></tr>
+                </thead>
+                <tbody>
+                    @if(Model==null||Model.Count==0){
+                        <tr><td colspan="9" class="text-center text-muted py-4">Sin inscripciones.</td></tr>
+                    } else {
+                        foreach(var item in Model){
+                            <tr>
+                                <td class="fw-semibold">@item.NombreUsuario</td>
+                                <td>@item.CorreoUsuario</td>
+                                <td>@item.FichaUsuario</td>
+                                <td>@item.ProgramaUsuario</td>
+                                <td>@item.NombreEvento</td>
+                                <td>@item.FechaEvento.ToString("dd/MM/yyyy")</td>
+                                <td>@item.Modalidad</td>
+                                <td>@(string.IsNullOrEmpty(item.NombreEquipo)?"---":item.NombreEquipo)</td>
+                                <td>@item.FechaInscripcion.ToString("dd/MM/yyyy")</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

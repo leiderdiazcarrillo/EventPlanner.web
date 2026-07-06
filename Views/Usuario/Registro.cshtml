@@ -1,0 +1,366 @@
+﻿@model EventPlanner.Web.Models.Usuario
+@using EventPlanner.Web.Models
+
+@{
+    ViewBag.Title = "Registro";
+}
+
+<link href="~/Content/Registro.css" rel="stylesheet" />
+
+<div class="contenedor-registro">
+
+    <h2 class="titulo-registro">
+        Registro de Aprendiz
+    </h2>
+
+    @using (Html.BeginForm("Registro", "Usuario", FormMethod.Post)) {
+    @Html.AntiForgeryToken()
+
+        <div class="grupo-formulario" style="text-align: center; margin-top: 15px;">
+            <label>Tipo Documento</label>
+
+            <select name="TipoDocumento" id="TipoDocumento" required >
+                <option value="">Seleccione</option>
+                <option value="CC">Cédula de Ciudadanía</option>
+                <option value="TI">Tarjeta de Identidad</option>
+                <option value="CE">Cédula de Extranjería</option>
+                <option value="PASAPORTE">Pasaporte</option>
+            </select>
+        </div>
+
+    
+
+        <div class="grupo-formulario" style="text-align: center; margin-top: 15px;">
+            <label style="display: block; margin-bottom: 5px;">NumeroDocumento</label>
+            <input type="text" name="NumeroDocumento" id="NumeroDocumento" required  />
+            <div id="mensajeDocumento"></div>
+        </div>
+
+        <div class="grupo-formulario" style="text-align: center; margin-top: 15px;">
+            <label>Nombre Completo</label>
+
+            <input type="text"
+                   name="NombreCompleto"
+                   id="NombreCompleto"
+                   required  />
+
+            <div id="mensajeNombre"></div>
+        </div>
+
+        <div class="grupo-formulario" style="text-align: center; margin-top: 15px;">
+            <label>Correo Electrónico</label>
+            <input type="email" name="Correo" id="Correo" required  />
+
+            <div id="mensajeCorreo"></div>
+        </div>
+
+        <div class="grupo-formulario" style="text-align: center; margin-top: 15px;">
+            <label>Ficha</label>
+
+            <input type="text"
+                   name="Ficha"
+                   id="Ficha"
+                   required />
+
+            <div id="mensajeFicha"></div>
+        </div>
+
+
+        <div class="grupo-formulario" style="text-align: center; margin-top: 15px;">
+            <label>Jornada</label>
+
+            <select name="Jornada" id="Jornada" required >
+                <option value="">Seleccione</option>
+                <option value="Mañana">Mañana</option>
+                <option value="Tarde">Tarde</option>
+                <option value="Noche">Noche</option>
+            </select>
+        </div>
+
+        <div class="grupo-formulario" style="text-align: center; margin-top: 15px;">
+            <label>Programa de Formación</label>
+
+            <select name="IdProgramaFormacion" id="ProgramaFormacion" required >
+
+                <option value="">
+                    Seleccione Programa
+                </option>
+
+                @foreach (ProgramaFormacion programa in ViewBag.Programas)
+                {
+                    <option value="@programa.IdProgramaFormacion">
+                        @programa.NombrePrograma
+                    </option>
+                }
+
+            </select>
+        </div>
+
+        <div class="grupo-formulario" style="text-align: center; margin-top: 15px;">
+            <label>Contraseña</label>
+
+            <input type="password"
+                   name="Contrasena"
+                   id="Contrasena"
+                   required  />
+
+            <div id="mensajeContrasena"></div>
+        </div>
+
+
+        <div class="grupo-formulario" style="text-align: center; margin-top: 15px;">
+            <label>Confirmar Contraseña</label>
+
+            <input type="password"
+                   id="ConfirmarContrasena"
+                   required  />
+
+            <div id="mensajeConfirmacion"></div>
+        </div>
+
+
+        <button type="submit"
+                class="btn-registro"
+                id="btnRegistrar"
+                disabled>
+            Registrarse
+        </button>
+
+        <div id="mensajeValidacion"
+             class="alert alert-danger"
+             style="display:none;">
+        </div>
+
+    }
+
+    @if (ViewBag.Mensaje != null)
+    {
+        <div class="@(ViewBag.TipoMensaje == "error"
+                ? "alerta-error"
+                : "alerta-ok")">
+            @ViewBag.Mensaje
+        </div>
+    }
+    <script>
+
+        const correo = document.getElementById("Correo");
+        const contrasena = document.getElementById("Contrasena");
+        const confirmar = document.getElementById("ConfirmarContrasena");
+
+        const mensajeCorreo = document.getElementById("mensajeCorreo");
+        const mensajeContrasena = document.getElementById("mensajeContrasena");
+        const mensajeConfirmacion = document.getElementById("mensajeConfirmacion");
+
+        const documento = document.getElementById("NumeroDocumento");
+        const ficha = document.getElementById("Ficha");
+        const nombre = document.getElementById("NombreCompleto");
+
+        console.log(documento);
+        console.log(ficha);
+        console.log(nombre);
+
+        const mensajeDocumento = document.getElementById("mensajeDocumento");
+        const mensajeFicha = document.getElementById("mensajeFicha");
+        const mensajeNombre = document.getElementById("mensajeNombre");
+
+        const btnRegistrar = document.getElementById("btnRegistrar");
+
+        const tipoDocumento = document.getElementById("TipoDocumento");
+        const jornada = document.getElementById("Jornada");
+        const programa = document.getElementById("ProgramaFormacion");
+
+        function validarFormulario() {
+
+            let correoValido =
+                correo.value.endsWith("@@soy.sena.edu.co");
+
+            let contrasenaValida =
+                contrasena.value.length >= 6 &&
+                contrasena.value.length <= 8;
+
+            let confirmacionValida =
+                contrasena.value === confirmar.value &&
+                confirmar.value !== "";
+
+            let documentoValido =
+                documento.value.length >= 6 &&
+                documento.value.length <= 10;
+
+            let fichaValida =
+                ficha.value.length >= 6 &&
+                ficha.value.length <= 8;
+
+            let nombreValido =
+                nombre.value.trim().length >= 3;
+
+            let tipoValido =
+                tipoDocumento.value !== "";
+
+            let jornadaValida =
+                jornada.value !== "";
+
+            let programaValido =
+                programa.value !== "";
+
+            btnRegistrar.disabled = !(
+                correoValido &&
+                contrasenaValida &&
+                confirmacionValida &&
+                documentoValido &&
+                fichaValida &&
+                nombreValido &&
+                tipoValido &&
+                jornadaValida &&
+                programaValido
+            );
+        }
+
+        // VALIDACION CORREO
+
+        correo.addEventListener("input", function () {
+
+            if (correo.value.endsWith("@@soy.sena.edu.co")) {
+
+                mensajeCorreo.innerHTML =
+                    "<div class='alerta-ok'>✓ Correo institucional válido</div>";
+
+            }
+            else {
+
+                mensajeCorreo.innerHTML =
+                    "<div class='alerta-error'>✗ Debe usar @@soy.sena.edu.co</div>";
+            }
+
+            validarFormulario();
+
+        });
+
+
+        // VALIDACION LONGITUD CONTRASEÑA
+
+        contrasena.addEventListener("input", function () {
+
+            if (contrasena.value.length >= 6 &&
+                contrasena.value.length <= 8) {
+
+                mensajeContrasena.innerHTML =
+                    "<div class='alerta-ok'>✓ Longitud válida</div>";
+            }
+            else {
+
+                mensajeContrasena.innerHTML =
+                    "<div class='alerta-error'>✗ Debe tener entre 6 y 8 caracteres</div>";
+            }
+
+            validarFormulario();
+
+        });
+
+
+        // VALIDACION COINCIDENCIA
+
+        confirmar.addEventListener("input", function () {
+
+            if (contrasena.value === confirmar.value) {
+
+                mensajeConfirmacion.innerHTML =
+                    "<div class='alerta-ok'>✓ Las contraseñas coinciden</div>";
+            }
+            else {
+
+                mensajeConfirmacion.innerHTML =
+                    "<div class='alerta-error'>✗ Las contraseñas no coinciden</div>";
+            }
+
+            validarFormulario();
+
+        });
+
+        // VALIDACION NUMERO DOCUMENTO
+        documento.addEventListener("input", function () {
+
+            documento.value = documento.value.replace(/[^0-9]/g, "");
+
+            if (documento.value.length > 10) {
+                documento.value = documento.value.substring(0, 10);
+            }
+
+            if (documento.value.length >= 6) {
+                mensajeDocumento.innerHTML =
+                    "<div class='alerta-ok'>✓ Documento válido</div>";
+            }
+            else {
+                mensajeDocumento.innerHTML =
+                    "<div class='alerta-error'>✗ Mínimo 6 y máximo 10 dígitos</div>";
+            }
+
+            validarFormulario();
+
+        });
+
+        // VALIDACION FICHA
+        ficha.addEventListener("input", function () {
+
+            ficha.value = ficha.value.replace(/[^0-9]/g, "");
+
+            if (ficha.value.length > 8) {
+                ficha.value = ficha.value.substring(0, 8);
+            }
+
+            if (ficha.value.length >= 6) {
+                mensajeFicha.innerHTML =
+                    "<div class='alerta-ok'>✓ Ficha válida</div>";
+            }
+            else {
+                mensajeFicha.innerHTML =
+                    "<div class='alerta-error'>✗ Mínimo 6 y máximo 8 dígitos</div>";
+            }
+
+            validarFormulario();
+
+        });
+
+        // VALIDACION NOMBRE
+        nombre.addEventListener("input", function () {
+
+            nombre.value =
+                nombre.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, "");
+
+            if (nombre.value.trim().length >= 3) {
+
+                mensajeNombre.innerHTML =
+                    "<div class='alerta-ok'>✓ Nombre válido</div>";
+            }
+            else {
+
+                mensajeNombre.innerHTML =
+                    "<div class='alerta-error'>✗ Solo letras y espacios</div>";
+            }
+
+            validarFormulario();
+
+        });
+
+        tipoDocumento.addEventListener(
+            "change",
+            validarFormulario
+        );
+
+        jornada.addEventListener(
+            "change",
+            validarFormulario
+        );
+
+        programa.addEventListener(
+            "change",
+            validarFormulario
+        );
+
+        validarFormulario();
+
+        
+       
+
+    </script>
+
+</div>

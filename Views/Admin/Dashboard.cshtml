@@ -1,0 +1,111 @@
+@model List<EventPlanner.Web.Models.Evento>
+@{ ViewBag.Title = "Dashboard"; }
+<div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold mb-0">Panel de Administracion</h4>
+            <small class="text-muted">Bienvenido, <strong>@ViewBag.Nombre</strong></small>
+        </div>
+        <a href="@Url.Action("Crear","Evento")" class="btn btn-ep">+ Nuevo Evento</a>
+    </div>
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-sm-4">
+            <div class="stat-card" style="background:linear-gradient(135deg,#00843D,#005a2b);">
+                <p>Total Eventos</p>
+                <h2>@(Model != null ? Model.Count : 0)</h2>
+            </div>
+        </div>
+        <div class="col-12 col-sm-4">
+            <div class="stat-card" style="background:linear-gradient(135deg,#0d6efd,#084298);">
+                <p>Activos</p>
+                <h2>@(Model != null ? Model.FindAll(e => e.Activo).Count : 0)</h2>
+            </div>
+        </div>
+        <div class="col-12 col-sm-4">
+            <div class="stat-card" style="background:linear-gradient(135deg,#dc3545,#842029);">
+                <p>Inactivos</p>
+                <h2>@(Model != null ? Model.FindAll(e => !e.Activo).Count : 0)</h2>
+            </div>
+        </div>
+    </div>
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <a href="@Url.Action("Index","Evento")" class="card text-decoration-none h-100">
+                <div class="card-body text-center py-3">
+                    <div style="font-size:1.8rem;">&#x1F4CB;</div>
+                    <div class="fw-semibold mt-1" style="color:#00843D;font-size:.9rem;">Gestionar Eventos</div>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a href="@Url.Action("Index","Equipo")" class="card text-decoration-none h-100">
+                <div class="card-body text-center py-3">
+                    <div style="font-size:1.8rem;">&#x1F465;</div>
+                    <div class="fw-semibold mt-1" style="color:#0d6efd;font-size:.9rem;">Gestionar Equipos</div>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a href="@Url.Action("Eventos","Reporte")" class="card text-decoration-none h-100">
+                <div class="card-body text-center py-3">
+                    <div style="font-size:1.8rem;">&#x1F4C4;</div>
+                    <div class="fw-semibold mt-1" style="color:#fd7e14;font-size:.9rem;">Reporte Eventos</div>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a href="@Url.Action("Inscripciones","Reporte")" class="card text-decoration-none h-100">
+                <div class="card-body text-center py-3">
+                    <div style="font-size:1.8rem;">&#x1F4DD;</div>
+                    <div class="fw-semibold mt-1" style="color:#6f42c1;font-size:.9rem;">Reporte Inscripciones</div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header card-header-ep d-flex justify-content-between align-items-center">
+            <span class="fw-semibold">Eventos Registrados</span>
+            <a href="@Url.Action("Index","Evento")" class="btn btn-sm btn-light">Ver todos</a>
+        </div>
+        <div class="card-body p-0">
+            @if (Model == null || Model.Count == 0) {
+                <div class="p-4 text-center text-muted">No hay eventos registrados.</div>
+            } else {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Evento</th><th>Tipo</th><th>Fecha</th>
+                                <th>Modalidad</th><th>Lugar</th>
+                                <th class="text-center">Estado</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model) {
+                                <tr>
+                                    <td class="fw-semibold">@item.NombreEvento</td>
+                                    <td><span class="badge bg-secondary">@item.NombreTipoEvento</span></td>
+                                    <td>@item.FechaEvento.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.Modalidad</td>
+                                    <td>@item.Lugar</td>
+                                    <td class="text-center">
+                                        @if (item.Activo) {
+                                            <span class="badge badge-activo px-2 py-1">Activo</span>
+                                        } else {
+                                            <span class="badge badge-inactivo px-2 py-1">Inactivo</span>
+                                        }
+                                    </td>
+                                    <td class="text-center text-nowrap">
+                                        <a href="@Url.Action("Editar","Evento",new{id=item.IdEvento})" class="btn btn-warning btn-sm">Editar</a>
+                                        <a href="@Url.Action("Equipos","Evento",new{id=item.IdEvento})" class="btn btn-info btn-sm ms-1">Equipos</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
